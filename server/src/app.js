@@ -3,6 +3,7 @@ import healthRouter from "./routes/health.route.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import authRouter from "./routes/auth.route.js";
 import meRouter from "./routes/me.route.js";
+import projectRouter from "./routes/project.route.js";
 
 
 
@@ -15,6 +16,9 @@ app.use(express.json());
 app.use("/health", healthRouter);
 
 app.use("/auth", authRouter);
+
+app.use("/projects", projectRouter);
+
 
 app.use("/", meRouter);
 
