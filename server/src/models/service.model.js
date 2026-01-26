@@ -6,10 +6,12 @@ const serviceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: true,
+      index:true,
     },
     name: {
       type: String,
       required: true,
+      trim:true,
     },
     type: {
       type: String,
@@ -18,11 +20,16 @@ const serviceSchema = new mongoose.Schema(
     },
     healthCheckUrl: {
       type: String,
+      trim:true,
     },
     status: {
       type: String,
+      enum:["unknown","healthy","down"],
       default: "unknown",
     },
+    lastCheckedAt:{
+        type:Date,
+    }
   },
   { timestamps: true }
 );
