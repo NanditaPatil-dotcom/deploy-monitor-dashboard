@@ -2,6 +2,8 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/auth.middleware.js";
 import { Project } from "../models/project.model.js";
 import { Service } from "../models/service.model.js";
+import { Metric } from "../models/metric.model.js";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -99,6 +101,29 @@ router.get(
       });
 
       res.json(services);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get(
+  "/services/:serviceId/metrics",
+  requireAuth,
+  async (req, res, next) => {
+    try {
+      const { serviceId } = req.params;
+
+      // basic ObjectId validation (important)
+      if (!mongoose.Types.ObjectId.isValid(serviceId)) {
+        return res.status(400).json({ message: "Invalid service ID" });
+      }
+
+      const metrics = await Metric.find({ serviceId })
+        .sort({ checkedAt: -1 })
+        .limit(50);
+
+      res.json(metrics);
     } catch (err) {
       next(err);
     }
