@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import axios from "axios";
 import { Service } from "../models/service.model.js";
+import { Metric } from "../models/metric.model.js";
 
 const CHECK_INTERVAL = "*/2 * * * *"; // every 2 minutes (dev-safe)
 const REQUEST_TIMEOUT_MS = 5000; // 5 seconds
@@ -41,10 +42,18 @@ const runUptimeCheck = async () => {
   for (const service of services) {
     const result = await pingService(service);
 
-    service.status = result.status;
-    service.lastCheckedAt = new Date();
 
-    await service.save();
+  service.status = result.status;
+  service.lastCheckedAt = new Date();
+  await service.save();
+
+  await Metric.create({
+  serviceId: service._id,
+  status: result.status,
+  responseTime: result.responseTime,
+  checkedAt: new Date(),
+});
+
 
     console.log(
       `[${service.name}] → ${result.status}`
